@@ -5,26 +5,26 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Student Registration API",
+      title: "Cavendish pcm API",
       version: "1.0.0",
       description: "API for managing student registrations",
     },
     servers: [
       {
-        url: "http://localhost:4000/api", // change to your API base url
+        url: "http://localhost:4000/api",
       },
     ],
-    // components: {
-    //   securitySchemes: {
-    //     bearerAuth: {
-    //       type: "http",
-    //       scheme: "bearer",
-    //       bearerFormat: "JWT",
-    //     },
-    //   },
-    // },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
-  apis: ["./routes/*.js", "./models/*.js"], // files containing annotations
+  apis: ["./routes/*.js"], // Use glob for all your routes
 };
 
 const specs = swaggerJsdoc(options);
