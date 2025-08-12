@@ -20,7 +20,11 @@ const createAnnouncement = async (req, res) => {
     const savedAnnouncement = await newAnnouncement.save();
 
     // Populate createdBy field for better output
-    await savedAnnouncement.populate("createdBy", "email role");
+    await savedAnnouncement.populate(
+      "createdBy",
+      "email role",
+      "firstName lastName"
+    );
 
     // Return the saved document
     res.status(201).json({

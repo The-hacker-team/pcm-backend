@@ -15,9 +15,12 @@ const createEvent = async (req, res) => {
       description,
       date,
       venue,
+      createdBy: req.user._id,
     });
 
     await newEvent.save();
+    // Populate createdBy field for better output
+    await newEvent.populate("createdBy", "email role firstName lastName");
 
     res.status(201).json({
       message: "Event created successfully",
