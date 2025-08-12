@@ -1,4 +1,5 @@
 const express = require("express");
+const setupSwagger = require("./swagger");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -8,6 +9,7 @@ const app = express();
 app.use(cors());
 // Middleware
 app.use(express.json());
+setupSwagger(app);
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
