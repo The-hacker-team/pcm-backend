@@ -16,9 +16,17 @@ const createAnnouncement = async (req, res) => {
       createdBy: req.user._id,
     });
 
-    await newAnnouncement.save();
+    // Save to database
+    const savedAnnouncement = await newAnnouncement.save();
 
-    res.status(201).json({ message: "Announcement posted successfully" });
+    // Populate createdBy field for better output
+    await savedAnnouncement.populate("createdBy", "email role");
+
+    // Return the saved document
+    res.status(201).json({
+      message: "Announcement posted successfully",
+      announcement: savedAnnouncement,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
