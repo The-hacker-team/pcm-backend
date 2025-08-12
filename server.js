@@ -12,8 +12,10 @@ app.use(express.json());
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const announcementRoutes = require("./routes/announcementRoutes");
+const upcomingEventRoutes = require("./routes/upcomingEventRoutes");
 app.use("/api/auth", authRoutes);
 app.use("/api/announcements", announcementRoutes);
+app.use("/api/events", upcomingEventRoutes);
 
 // Connect to MongoDB
 mongoose
