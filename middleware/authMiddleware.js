@@ -31,7 +31,7 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Role check middleware
+// Role check middleware for Admin role
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === "Admin") {
     next();
@@ -41,3 +41,14 @@ const adminOnly = (req, res, next) => {
 };
 
 module.exports = { protect, adminOnly };
+
+// Role check middleware for Communication role
+const communicationOnly = (req, res, next) => {
+  if (req.user && req.user.role === "Communication") {
+    next();
+  } else {
+    res.status(403).json({ message: "Access denied: Communication role required" });
+  }
+};
+
+module.exports = { protect, adminOnly, communicationOnly };
