@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const studentRegistrationSchema = new mongoose.Schema({
-  firstName: {
+  studentFirstName: {
     type: String,
     required: [true, "First name is required"],
   },
-  lastName: {
+  studentLastName: {
     type: String,
     required: [true, "Last name is required"],
   },

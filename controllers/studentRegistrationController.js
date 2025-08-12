@@ -4,8 +4,8 @@ const StudentRegistration = require("../models/StudentRegistration");
 const createStudentRegistration = async (req, res) => {
   try {
     const {
-      firstName,
-      lastName,
+      studentFirstName,
+      studentLastName,
       phoneNumber,
       homeAddress,
       course,
@@ -17,8 +17,8 @@ const createStudentRegistration = async (req, res) => {
 
     // Validate required fields
     if (
-      !firstName ||
-      !lastName ||
+      !studentFirstName ||
+      !studentLastName ||
       !phoneNumber ||
       !homeAddress ||
       !course ||
@@ -31,8 +31,8 @@ const createStudentRegistration = async (req, res) => {
     }
 
     const newRegistration = new StudentRegistration({
-      firstName,
-      lastName,
+      studentFirstName,
+      studentLastName,
       phoneNumber,
       homeAddress,
       course,
@@ -44,6 +44,13 @@ const createStudentRegistration = async (req, res) => {
     });
 
     await newRegistration.save();
+
+    // Populate createdBy field for better output
+    await newRegistration.populate(
+      "createdBy",
+      "email role"
+      //   "firstName lastName"
+    );
 
     res.status(201).json({
       message: "Student registration created successfully",
@@ -58,7 +65,7 @@ const createStudentRegistration = async (req, res) => {
 const getStudentRegistrations = async (req, res) => {
   try {
     const registrations = await StudentRegistration.find()
-      .populate("createdBy", "email role firstName lastName")
+      .populate("createdBy", "email role")
       .sort({ createdAt: -1 });
 
     res.json(registrations);
