@@ -1,19 +1,12 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-  },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["Communication", "Secretary", "Treasurer"],
-    required: true,
+    enum: ["Admin", "Communication", "Secretary", "Treasurer"],
+    default: "Communication",
   },
 });
 

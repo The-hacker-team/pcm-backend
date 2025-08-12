@@ -1,6 +1,12 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+};
+
+// Admin-protected registration
 const registerUser = async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -16,12 +22,7 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
-      email,
-      password: hashedPassword,
-      role,
-    });
-
+    const newUser = new User({ email, password: hashedPassword, role });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -30,4 +31,22 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+// Public login
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.json({
+      _id: user.id,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user.id),
+    });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+};
+
+module.exports = { registerUser, loginUser };
