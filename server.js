@@ -6,7 +6,12 @@ const cors = require("cors");
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5174", // or wherever your React app is running
+    credentials: true,
+  })
+);
 // Middleware
 app.use(express.json());
 setupSwagger(app);

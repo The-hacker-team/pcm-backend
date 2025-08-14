@@ -2,8 +2,19 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      phoneNumber: user.phoneNumber,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
 };
 
 // Admin-protected registration
@@ -57,7 +68,9 @@ const registerUser = async (req, res) => {
     // Return success and user data (excluding password)
     res.status(201).json({
       message: "User registered successfully",
+      token: generateToken(newUser),
       user: {
+        id: newUser._id,
         email: newUser.email,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
@@ -88,13 +101,16 @@ const loginUser = async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
-        _id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        token: generateToken(user.id),
+        message: "Login successful",
+        token: generateToken(user),
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phoneNumber: user.phoneNumber,
+          role: user.role,
+        },
       });
     } else {
       res.status(401).json({ message: "Invalid credentials" });
