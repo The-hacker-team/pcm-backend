@@ -144,7 +144,13 @@
  */
 
 const express = require("express");
-const { registerUser, loginUser } = require("../controllers/authController");
+const {
+  registerUser,
+  loginUser,
+  getAllUsers,
+  getUsersByRole,
+  deleteUser,
+} = require("../controllers/authController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -154,5 +160,14 @@ router.post("/register", protect, adminOnly, registerUser);
 
 // Public login
 router.post("/login", loginUser);
+
+// Get all users (All authenticated users can view)
+router.get("/users", protect, getAllUsers);
+
+// Get users by role (All authenticated users can view)
+router.get("/users/role/:role", protect, getUsersByRole);
+
+// Delete user (Admin only)
+router.delete("/users/:id", protect, adminOnly, deleteUser);
 
 module.exports = router;

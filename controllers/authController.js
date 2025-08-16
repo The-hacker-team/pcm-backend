@@ -120,4 +120,107 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// Get all registered users (All authenticated users can view)
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
+
+    res.json({
+      message: "Users retrieved successfully",
+      count: users.length,
+      users: users.map((user) => ({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get users by role (All authenticated users can view)
+const getUsersByRole = async (req, res) => {
+  try {
+    const { role } = req.params;
+
+    // Validate role parameter
+    const validRoles = ["admin", "user", "communication"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({
+        message: "Invalid role. Valid roles are: admin, user, communication",
+      });
+    }
+
+    const users = await User.find({ role })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      message: `Users with role '${role}' retrieved successfully`,
+      count: users.length,
+      role: role,
+      users: users.map((user) => ({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Delete a user (Admin only)
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if user exists
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Prevent admin from deleting themselves
+    if (user._id.toString() === req.user._id.toString()) {
+      return res
+        .status(400)
+        .json({ message: "You cannot delete your own account" });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(id);
+
+    res.json({
+      message: "User deleted successfully",
+      deletedUser: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getAllUsers,
+  getUsersByRole,
+  deleteUser,
+};
