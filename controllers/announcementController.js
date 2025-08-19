@@ -23,7 +23,7 @@ const createAnnouncement = async (req, res) => {
     await savedAnnouncement.populate(
       "createdBy",
       "email role",
-      "firstName lastName"
+      // "firstName lastName"
     );
 
     // Return the saved document
